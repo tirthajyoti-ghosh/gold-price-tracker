@@ -42,8 +42,8 @@ type GoldPrice = {
 
 function maxProfit(data: GoldPrice[], userInvestment: number) {
     let maxReturn = 0;
-    let buyDate = '';
-    let sellDate = '';
+    let buyDate = "";
+    let sellDate = "";
 
     for (let i = 0; i < data.length - 1; i++) {
         for (let j = i + 1; j < data.length; j++) {
@@ -70,7 +70,7 @@ export default function App() {
     const [dateRange, setDateRange] = useState<DateRange>();
     const [progress, setProgress] = useState(10);
     const [isLoading, setIsLoading] = useState(false);
-    const inputRef = useRef<HTMLInputElement>(null);
+    const [investment, setInvestment] = useState(0);
     const [analysis, setAnalysis] = useState({
         buyDate: "",
         sellDate: "",
@@ -78,11 +78,7 @@ export default function App() {
         returnsPercentage: 0,
         actualReturns: 0,
     });
-
-    const analyzeInvestment = (investment: number) => {
-        const calculatedAnalysis = maxProfit(goldPrices, investment);
-        setAnalysis(calculatedAnalysis);
-    };
+    const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         const source = axios.CancelToken.source();
@@ -115,6 +111,11 @@ export default function App() {
                 setGoldPrices(response.data);
                 setIsLoading(false);
                 setProgress(100);
+                if (inputRef.current && inputRef.current.value) {
+                    setAnalysis(
+                        maxProfit(response.data, Number(inputRef.current.value))
+                    );
+                }
             } catch (error) {
                 if (axios.isCancel(error)) {
                     console.log("Request canceled", error.message);
@@ -148,19 +149,25 @@ export default function App() {
                     <form
                         onSubmit={(e) => {
                             e.preventDefault();
-                            analyzeInvestment(
-                                Number(inputRef.current?.value) || 0
-                            );
+                            setAnalysis(maxProfit(goldPrices, investment));
                         }}
                         className="w-[300px] max-w-sm"
                     >
                         <Label>Analyze your investment</Label>
                         <Input
                             ref={inputRef}
+                            value={investment}
+                            onChange={(e) =>
+                                setInvestment(Number(e.target.value))
+                            }
                             type="number"
                             placeholder="Enter amount"
                         />
-                        <Button type="submit" className="mt-2">
+                        <Button
+                            type="submit"
+                            className="mt-2"
+                            disabled={isLoading || investment === 0}
+                        >
                             Analyze
                         </Button>
                     </form>
@@ -192,47 +199,61 @@ export default function App() {
                             },
                             plugins: {
                                 annotation: {
-                                    annotations: {
-                                        buyPoint: {
-                                            type: "line",
-                                            xMin: analysis.buyDate,
-                                            xMax: analysis.buyDate,
-                                            borderColor: "rgb(0, 255, 0)",
-                                            borderWidth: 2,
-                                        },
-                                        sellPoint: {
-                                            type: "line",
-                                            xMin: analysis.sellDate,
-                                            xMax: analysis.sellDate,
-                                            borderColor: "rgb(255, 0, 0)",
-                                            borderWidth: 2,
-                                        },
-                                        buyPointLabel: {
-                                            type: 'label',
-                                            xMin: analysis.buyDate,
-                                            xMax: analysis.buyDate,
-                                            backgroundColor: "rgba(0, 255, 0, 0.5)",
-                                            content: 'Buy',
-                                            yAdjust: -10,
-                                        },
-                                        sellPointLabel: {
-                                            type: 'label',
-                                            xMin: analysis.sellDate,
-                                            xMax: analysis.sellDate,
-                                            backgroundColor: "rgba(255, 0, 0, 0.5)",
-                                            content: 'Sell',
-                                            yAdjust: -10,
-                                        },
-                                        maxReturnLabel: {
-                                            type: 'label',
-                                            xAdjust: -10,
-                                            yAdjust: -150,
-                                            content: `Max return: ${Math.round(analysis.maxReturn * 100) / 100}`,
-                                            borderColor: "rgb(0, 0, 255)",
-                                            borderWidth: 2,
-                                        }
-
-                                    },
+                                    clip: false,
+                                    ...(analysis.buyDate && analysis.sellDate
+                                        ? {
+                                              annotations: {
+                                                  buyPoint: {
+                                                      type: "line",
+                                                      xMin: analysis.buyDate,
+                                                      xMax: analysis.buyDate,
+                                                      borderColor:
+                                                          "rgb(0, 255, 0)",
+                                                      borderWidth: 2,
+                                                  },
+                                                  sellPoint: {
+                                                      type: "line",
+                                                      xMin: analysis.sellDate,
+                                                      xMax: analysis.sellDate,
+                                                      borderColor:
+                                                          "rgb(255, 0, 0)",
+                                                      borderWidth: 2,
+                                                  },
+                                                  buyPointLabel: {
+                                                      type: "label",
+                                                      xMin: analysis.buyDate,
+                                                      xMax: analysis.buyDate,
+                                                      backgroundColor:
+                                                          "rgba(0, 255, 0, 0.5)",
+                                                      content: "Buy",
+                                                      yAdjust: -10,
+                                                  },
+                                                  sellPointLabel: {
+                                                      type: "label",
+                                                      xMin: analysis.sellDate,
+                                                      xMax: analysis.sellDate,
+                                                      backgroundColor:
+                                                          "rgba(255, 0, 0, 0.5)",
+                                                      content: "Sell",
+                                                      yAdjust: -10,
+                                                  },
+                                                  maxReturnLabel: {
+                                                      type: "label",
+                                                      xAdjust: 360,
+                                                      yAdjust: -180,
+                                                      content: `Max return: ${
+                                                          Math.round(
+                                                              analysis.maxReturn *
+                                                                  100
+                                                          ) / 100
+                                                      }`,
+                                                      borderColor:
+                                                          "rgb(0, 0, 255)",
+                                                      borderWidth: 2,
+                                                  },
+                                              },
+                                          }
+                                        : {}),
                                 },
                                 tooltip: {
                                     enabled: true,
@@ -267,16 +288,7 @@ export default function App() {
                                     display: false,
                                 },
                                 title: {
-                                    display: Boolean(
-                                        dateRange?.from && dateRange?.to
-                                    ),
-                                    text: `Fluctuations in gold prices from ${format(
-                                        dateRange?.from || new Date(),
-                                        "MMMM dd, yyyy"
-                                    )} to ${format(
-                                        dateRange?.to || new Date(),
-                                        "MMMM dd, yyyy"
-                                    )}`,
+                                    display: false,
                                 },
                             },
                         }}
