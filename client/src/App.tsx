@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -10,12 +10,17 @@ import {
     Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+import ChartAnnotation from "chartjs-plugin-annotation";
 import { DateRange } from "react-day-picker";
 import { parse, format } from "date-fns";
 import axios from "axios";
 import { LineChart } from "lucide-react";
 
 import { Progress } from "@/components/ui/progress";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+
 import DateRangePicker from "./components/DateRangePicker";
 
 ChartJS.register(
@@ -28,16 +33,56 @@ ChartJS.register(
     Legend
 );
 
+ChartJS.register(ChartAnnotation);
+
 type GoldPrice = {
     data: string;
     cena: number;
 };
+
+function maxProfit(data: GoldPrice[], userInvestment: number) {
+    let maxReturn = 0;
+    let buyDate = '';
+    let sellDate = '';
+
+    for (let i = 0; i < data.length - 1; i++) {
+        for (let j = i + 1; j < data.length; j++) {
+            const profit = data[j].cena - data[i].cena;
+            if (profit > maxReturn) {
+                maxReturn = profit;
+                buyDate = data[i].data;
+                sellDate = data[j].data;
+            }
+        }
+    }
+
+    // Calculate the returns as a percentage of the user's investment
+    const returnsPercentage = (maxReturn / data[0].cena) * 100;
+
+    // Calculate the actual returns in the user's currency
+    const actualReturns = (returnsPercentage / 100) * userInvestment;
+
+    return { buyDate, sellDate, maxReturn, returnsPercentage, actualReturns };
+}
 
 export default function App() {
     const [goldPrices, setGoldPrices] = useState<GoldPrice[]>([]);
     const [dateRange, setDateRange] = useState<DateRange>();
     const [progress, setProgress] = useState(10);
     const [isLoading, setIsLoading] = useState(false);
+    const inputRef = useRef<HTMLInputElement>(null);
+    const [analysis, setAnalysis] = useState({
+        buyDate: "",
+        sellDate: "",
+        maxReturn: 0,
+        returnsPercentage: 0,
+        actualReturns: 0,
+    });
+
+    const analyzeInvestment = (investment: number) => {
+        const calculatedAnalysis = maxProfit(goldPrices, investment);
+        setAnalysis(calculatedAnalysis);
+    };
 
     useEffect(() => {
         const source = axios.CancelToken.source();
@@ -54,7 +99,7 @@ export default function App() {
                     return Math.min(oldProgress + diff, 100);
                 });
             }, 200);
-            
+
             try {
                 if (!dateRange) {
                     setGoldPrices([]);
@@ -90,12 +135,37 @@ export default function App() {
     return (
         <div className="flex justify-center h-screen">
             <div className="h-screen mt-5">
-                <h1 className="text-3xl font-bold mb-10">Gold price tracker</h1>
+                <h1 className="text-3xl font-bold mb-10">
+                    Gold price tracker + Investment analysis
+                </h1>
+                <Label>Select a date range</Label>
                 <DateRangePicker
                     handleDateChange={setDateRange}
                     className="w-[300px] mb-5"
                 />
-                <div className="relative w-[1000px] h-[600px]">
+
+                {goldPrices.length > 2 && (
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            analyzeInvestment(
+                                Number(inputRef.current?.value) || 0
+                            );
+                        }}
+                        className="w-[300px] max-w-sm"
+                    >
+                        <Label>Analyze your investment</Label>
+                        <Input
+                            ref={inputRef}
+                            type="number"
+                            placeholder="Enter amount"
+                        />
+                        <Button type="submit" className="mt-2">
+                            Analyze
+                        </Button>
+                    </form>
+                )}
+                <div className="relative w-[900px] h-[600px] mt-10">
                     {isLoading && (
                         <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-60">
                             <Progress value={progress} className="w-60 h-1" />
@@ -121,6 +191,49 @@ export default function App() {
                                 },
                             },
                             plugins: {
+                                annotation: {
+                                    annotations: {
+                                        buyPoint: {
+                                            type: "line",
+                                            xMin: analysis.buyDate,
+                                            xMax: analysis.buyDate,
+                                            borderColor: "rgb(0, 255, 0)",
+                                            borderWidth: 2,
+                                        },
+                                        sellPoint: {
+                                            type: "line",
+                                            xMin: analysis.sellDate,
+                                            xMax: analysis.sellDate,
+                                            borderColor: "rgb(255, 0, 0)",
+                                            borderWidth: 2,
+                                        },
+                                        buyPointLabel: {
+                                            type: 'label',
+                                            xMin: analysis.buyDate,
+                                            xMax: analysis.buyDate,
+                                            backgroundColor: "rgba(0, 255, 0, 0.5)",
+                                            content: 'Buy',
+                                            yAdjust: -10,
+                                        },
+                                        sellPointLabel: {
+                                            type: 'label',
+                                            xMin: analysis.sellDate,
+                                            xMax: analysis.sellDate,
+                                            backgroundColor: "rgba(255, 0, 0, 0.5)",
+                                            content: 'Sell',
+                                            yAdjust: -10,
+                                        },
+                                        maxReturnLabel: {
+                                            type: 'label',
+                                            xAdjust: -10,
+                                            yAdjust: -150,
+                                            content: `Max return: ${Math.round(analysis.maxReturn * 100) / 100}`,
+                                            borderColor: "rgb(0, 0, 255)",
+                                            borderWidth: 2,
+                                        }
+
+                                    },
+                                },
                                 tooltip: {
                                     enabled: true,
                                     titleFont: {
