@@ -8,7 +8,6 @@
 - Shadcn UI
 - ChartJS
 \
-\
 
 ## Features
 
