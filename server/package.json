@@ -4,7 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon -L --watch src --ext ts --exec npx ts-node src/index.ts"
+    "start": "nodemon -L --watch src --ext ts --exec npx ts-node src/index.ts",
+    "deploy": "tsc && node build/index.js"
   },
   "dependencies": {
     "axios": "^1.6.7",
