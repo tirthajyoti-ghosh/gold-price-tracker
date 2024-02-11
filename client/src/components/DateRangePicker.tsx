@@ -72,10 +72,10 @@ export default function DateRangePicker({
                                 newDate &&
                                 newDate.from &&
                                 newDate.to &&
-                                differenceInDays(newDate.to, newDate.from) > 365
+                                differenceInDays(newDate.to, newDate.from) > 1825 // 5 years
                             ) {
                                 toast.error(
-                                    "Date range cannot exceed 365 days"
+                                    "Date range cannot exceed 5 years"
                                 );
                             } else {
                                 setDate(newDate);
