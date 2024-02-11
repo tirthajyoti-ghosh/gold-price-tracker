@@ -7,7 +7,6 @@
 - Vite
 - Shadcn UI
 - ChartJS
-\
 
 ## Features
 
