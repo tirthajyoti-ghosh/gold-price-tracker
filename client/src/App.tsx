@@ -127,7 +127,7 @@ export default function App() {
                 setGoldPrices(response.data);
                 setIsLoading(false);
                 setProgress(100);
-                if (inputRef.current && inputRef.current.value !== '0') {
+                if (inputRef.current && inputRef.current.value !== "0") {
                     setAnalysis(
                         maxProfit(response.data, Number(inputRef.current.value))
                     );
@@ -150,15 +150,15 @@ export default function App() {
     }, [dateRange]);
 
     return (
-        <div className="flex justify-center h-screen">
-            <div className="h-screen mt-5">
+        <div className="flex justify-center h-screen p-4 sm:p-10">
+            <div className="h-screen mt-5 max-w-full sm:max-w-md md:max-w-lg lg:max-w-xl">
                 <h1 className="text-3xl font-bold mb-10">
                     Gold price tracker + Investment analysis
                 </h1>
                 <Label>Select a date range</Label>
                 <DateRangePicker
                     handleDateChange={setDateRange}
-                    className="w-[300px] mb-5"
+                    className="w-full sm:w-[300px] mb-5"
                 />
 
                 {goldPrices.length > 2 && (
@@ -167,7 +167,7 @@ export default function App() {
                             e.preventDefault();
                             setAnalysis(maxProfit(goldPrices, investment));
                         }}
-                        className="w-[300px] max-w-sm"
+                        className="w-full sm:w-[300px] max-w-sm"
                     >
                         <Label>Analyze your investment</Label>
                         <Input
@@ -188,14 +188,14 @@ export default function App() {
                         </Button>
                     </form>
                 )}
-                <div className="relative w-[900px] h-[600px] mt-10">
+                <div className="relative w-full sm:w-[900px] sm:h-[400px] h-[300px] mt-10">
                     {isLoading && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-60">
+                        <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-60 -top-10">
                             <Progress value={progress} className="w-60 h-1" />
                         </div>
                     )}
                     {!isLoading && goldPrices.length === 0 && (
-                        <div className="w-[1000px] h-[500px] absolute inset-0 flex items-center justify-center">
+                        <div className="w-full sm:w-[1000px] sm:h-[400px] h-[300px] absolute inset-0 flex items-center justify-center -top-10">
                             <div className="border border-gray-300 bg-white rounded p-4 flex flex-col items-center space-x-2">
                                 <LineChart className="h-12 w-12 text-gray-500 mb-3" />
                                 <span className="text-gray-500">
@@ -258,12 +258,18 @@ export default function App() {
                                                       xAdjust: 350,
                                                       yAdjust: -150,
                                                       content: () => {
-                                                            return [
-                                                                `Buy Date: ${analysis.buyDate}`,
-                                                                `Sell Date: ${analysis.sellDate}`,
-                                                                `Profit: ${analysis.profit.toFixed(2)}`,
-                                                                `Returns: ${analysis.actualReturns.toFixed(2)} (${analysis.returnsPercentage.toFixed(2)}%)`,
-                                                            ]
+                                                          return [
+                                                              `Buy Date: ${analysis.buyDate}`,
+                                                              `Sell Date: ${analysis.sellDate}`,
+                                                              `Profit: ${analysis.profit.toFixed(
+                                                                  2
+                                                              )}`,
+                                                              `Returns: ${analysis.actualReturns.toFixed(
+                                                                  2
+                                                              )} (${analysis.returnsPercentage.toFixed(
+                                                                  2
+                                                              )}%)`,
+                                                          ];
                                                       },
                                                       borderColor:
                                                           "rgb(0, 0, 0)",
