@@ -41,28 +41,37 @@ type GoldPrice = {
 };
 
 function maxProfit(data: GoldPrice[], userInvestment: number) {
-    let maxReturn = 0;
+    let maxProfit = 0;
     let buyDate = "";
     let sellDate = "";
+    let minima = data[0].cena;
+    let maxima = data[0].cena;
 
     for (let i = 0; i < data.length - 1; i++) {
         for (let j = i + 1; j < data.length; j++) {
             const profit = data[j].cena - data[i].cena;
-            if (profit > maxReturn) {
-                maxReturn = profit;
+            if (profit > maxProfit) {
+                maxProfit = profit;
                 buyDate = data[i].data;
+                minima = data[i].cena;
                 sellDate = data[j].data;
+                maxima = data[j].cena;
             }
         }
     }
 
-    // Calculate the returns as a percentage of the user's investment
-    const returnsPercentage = (maxReturn / data[0].cena) * 100;
+    const noOfShares = userInvestment / minima;
+    const finalAmount = noOfShares * maxima;
+    const returns = finalAmount - userInvestment;
+    const returnsPercentage = (returns / userInvestment) * 100;
 
-    // Calculate the actual returns in the user's currency
-    const actualReturns = (returnsPercentage / 100) * userInvestment;
-
-    return { buyDate, sellDate, maxReturn, returnsPercentage, actualReturns };
+    return {
+        buyDate,
+        sellDate,
+        profit: maxProfit,
+        returnsPercentage,
+        actualReturns: returns,
+    };
 }
 
 export default function App() {
@@ -74,7 +83,7 @@ export default function App() {
     const [analysis, setAnalysis] = useState({
         buyDate: "",
         sellDate: "",
-        maxReturn: 0,
+        profit: 0,
         returnsPercentage: 0,
         actualReturns: 0,
     });
@@ -97,21 +106,28 @@ export default function App() {
             }, 200);
 
             try {
-                if (!dateRange) {
+                if (!dateRange?.from || !dateRange?.to) {
                     setGoldPrices([]);
                     setIsLoading(false);
+                    setAnalysis({
+                        buyDate: "",
+                        sellDate: "",
+                        profit: 0,
+                        returnsPercentage: 0,
+                        actualReturns: 0,
+                    });
                     return;
                 }
                 setIsLoading(true);
                 const { from, to } = dateRange;
                 const response = await axios.get<GoldPrice[]>(
-                    `http://localhost:5000/?start=${from?.toISOString()}&end=${to?.toISOString()}`,
+                    `https://gold-price-tracker.cyclic.app/?start=${from?.toISOString()}&end=${to?.toISOString()}`,
                     { cancelToken: source.token }
                 );
                 setGoldPrices(response.data);
                 setIsLoading(false);
                 setProgress(100);
-                if (inputRef.current && inputRef.current.value) {
+                if (inputRef.current && inputRef.current.value !== '0') {
                     setAnalysis(
                         maxProfit(response.data, Number(inputRef.current.value))
                     );
@@ -239,16 +255,18 @@ export default function App() {
                                                   },
                                                   maxReturnLabel: {
                                                       type: "label",
-                                                      xAdjust: 360,
-                                                      yAdjust: -180,
-                                                      content: `Max return: ${
-                                                          Math.round(
-                                                              analysis.maxReturn *
-                                                                  100
-                                                          ) / 100
-                                                      }`,
+                                                      xAdjust: 350,
+                                                      yAdjust: -150,
+                                                      content: () => {
+                                                            return [
+                                                                `Buy Date: ${analysis.buyDate}`,
+                                                                `Sell Date: ${analysis.sellDate}`,
+                                                                `Profit: ${analysis.profit.toFixed(2)}`,
+                                                                `Returns: ${analysis.actualReturns.toFixed(2)} (${analysis.returnsPercentage.toFixed(2)}%)`,
+                                                            ]
+                                                      },
                                                       borderColor:
-                                                          "rgb(0, 0, 255)",
+                                                          "rgb(0, 0, 0)",
                                                       borderWidth: 2,
                                                   },
                                               },
