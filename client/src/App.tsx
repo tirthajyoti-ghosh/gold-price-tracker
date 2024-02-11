@@ -151,7 +151,7 @@ export default function App() {
 
     return (
         <div className="flex justify-center h-screen p-4 sm:p-10">
-            <div className="h-screen mt-5 max-w-full sm:max-w-md md:max-w-lg lg:max-w-xl">
+            <div className="h-screen mt-5 max-w-full sm:max-w-md md:max-w-lg lg:max-w-4xl xl:max-w-5xl">
                 <h1 className="text-3xl font-bold mb-10">
                     Gold price tracker + Investment analysis
                 </h1>
