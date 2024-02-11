@@ -65,6 +65,9 @@ export default function DateRangePicker({
                     <Calendar
                         initialFocus
                         mode="range"
+                        captionLayout="dropdown-buttons"
+                        fromYear={2013}
+                        toYear={new Date().getFullYear() + 1}
                         defaultMonth={date?.from}
                         selected={date}
                         onSelect={(newDate) => {

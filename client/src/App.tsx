@@ -103,7 +103,7 @@ export default function App() {
                         return 100;
                     }
                     const diff = Math.random() * 30;
-                    return Math.min(oldProgress + diff, 100);
+                    return Math.min(oldProgress + diff, 90);
                 });
             }, 200);
 
@@ -124,7 +124,7 @@ export default function App() {
                 setIsLoading(true);
                 const { from, to } = dateRange;
                 const response = await axios.get<GoldPrice[]>(
-                    `https://gold-price-tracker.cyclic.app/?start=${from?.toISOString()}&end=${to?.toISOString()}`,
+                    `http://localhost:3000/?start=${from?.toISOString()}&end=${to?.toISOString()}`,
                     { cancelToken: source.token }
                 );
                 setGoldPrices(response.data);
