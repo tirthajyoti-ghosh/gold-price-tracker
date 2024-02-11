@@ -20,12 +20,11 @@ function splitDates(start: Date, end: Date): Array<{start: Date, end: Date}> {
     dateRanges.push({ start: currentStart, end: currentEnd });
     currentStart = new Date(currentEnd.getTime() + oneDay);
     currentEnd = new Date(currentStart.getTime() + oneYear);
-    if (currentEnd > end) {
-      currentEnd = end;
-    }
   }
 
-  dateRanges.push({ start: currentStart, end: currentEnd });
+  if (currentStart <= end) {
+    dateRanges.push({ start: currentStart, end: currentEnd > end ? end : currentEnd });
+  }
 
   return dateRanges;
 }
