@@ -170,7 +170,7 @@ export default function App() {
                             e.preventDefault();
                             setAnalysis(maxProfit(goldPrices, investment));
                         }}
-                        className="w-full sm:w-[300px] max-w-sm"
+                        className="w-[300px] max-w-sm"
                     >
                         <Label>Analyze your investment</Label>
                         <Input
