@@ -15,13 +15,14 @@ import { DateRange } from "react-day-picker";
 import { parse, format } from "date-fns";
 import axios from "axios";
 import { LineChart } from "lucide-react";
+import { DatePicker } from 'antd';
 
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
-import DateRangePicker from "./components/DateRangePicker";
+// import DateRangePicker from "./components/DateRangePicker";
 
 ChartJS.register(
     CategoryScale,
@@ -39,6 +40,8 @@ type GoldPrice = {
     data: string;
     cena: number;
 };
+
+const { RangePicker } = DatePicker;
 
 function maxProfit(data: GoldPrice[], userInvestment: number) {
     let maxProfit = 0;
@@ -159,9 +162,19 @@ export default function App() {
                     Gold price tracker + Investment analysis
                 </h1>
                 <Label>Select a date range</Label>
-                <DateRangePicker
+                {/* <DateRangePicker
                     handleDateChange={setDateRange}
                     className="w-full sm:w-[300px] mb-5"
+                /> */}
+
+                <RangePicker
+                    onChange={(dates) => {
+                        setDateRange({
+                            from: dates?.[0]?.toDate(),
+                            to: dates?.[1]?.toDate(),
+                        });
+                    }}
+                    className="w-full sm:w-[300px] mb-5 flex"
                 />
 
                 {goldPrices.length > 2 && (

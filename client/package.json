@@ -15,6 +15,7 @@
     "@radix-ui/react-popover": "^1.0.7",
     "@radix-ui/react-progress": "^1.0.3",
     "@radix-ui/react-slot": "^1.0.2",
+    "antd": "^5.14.0",
     "axios": "^1.6.7",
     "chart.js": "^4.4.1",
     "chartjs-plugin-annotation": "^3.0.1",
