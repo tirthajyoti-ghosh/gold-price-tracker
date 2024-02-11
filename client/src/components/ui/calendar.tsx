@@ -10,6 +10,9 @@ import { DayPicker, DropdownProps } from "react-day-picker"
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
+// Picked up from: https://gist.github.com/mjbalcueva/1fbcb1be9ef68a82c14d778b686a04fa
+// Originated from: https://github.com/shadcn-ui/ui/issues/546
+
 function Calendar({ className, classNames, showOutsideDays = true, ...props }: CalendarProps) {
   return (
     <DayPicker
