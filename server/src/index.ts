@@ -7,7 +7,7 @@ app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-const port = 5000;
+const port = 3000;
 
 app.get('/', async (req, res) => {
   const start = req.query.start as string;
