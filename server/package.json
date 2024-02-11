@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
-  "scripts": {
-    "start": "tsc && node build/index.js",
+  "scripts": {    
+    "build": "npx tsc",
+    "start": "node dist/index.js",
     "dev": "nodemon -L --watch src --ext ts --exec npx ts-node src/index.ts"
   },
   "dependencies": {
