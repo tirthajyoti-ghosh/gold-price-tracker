@@ -150,8 +150,8 @@ export default function App() {
     }, [dateRange]);
 
     return (
-        <div className="flex justify-center h-screen p-4 sm:p-10">
-            <div className="h-screen mt-5 max-w-full sm:max-w-md md:max-w-lg lg:max-w-4xl xl:max-w-5xl">
+        <div className="flex justify-center p-4 sm:p-10">
+            <div className=" mt-5 max-w-full sm:max-w-md md:max-w-lg lg:max-w-4xl xl:max-w-5xl mb-5">
                 <h1 className="text-3xl font-bold mb-10">
                     Gold price tracker + Investment analysis
                 </h1>
@@ -190,12 +190,12 @@ export default function App() {
                 )}
                 <div className="relative w-full sm:w-[900px] sm:h-[400px] h-[300px] mt-10">
                     {isLoading && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-60 -top-10">
+                        <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-60 bottom-10">
                             <Progress value={progress} className="w-60 h-1" />
                         </div>
                     )}
                     {!isLoading && goldPrices.length === 0 && (
-                        <div className="w-full sm:w-[1000px] sm:h-[400px] h-[300px] absolute inset-0 flex items-center justify-center -top-10">
+                        <div className="w-full sm:w-[1000px] sm:h-[400px] h-[300px] absolute inset-0 flex items-center justify-center bottom-10">
                             <div className="border border-gray-300 bg-white rounded p-4 flex flex-col items-center space-x-2">
                                 <LineChart className="h-12 w-12 text-gray-500 mb-3" />
                                 <span className="text-gray-500">
@@ -252,28 +252,6 @@ export default function App() {
                                                           "rgba(255, 0, 0, 0.5)",
                                                       content: "Sell",
                                                       yAdjust: -10,
-                                                  },
-                                                  maxReturnLabel: {
-                                                      type: "label",
-                                                      xAdjust: 350,
-                                                      yAdjust: -150,
-                                                      content: () => {
-                                                          return [
-                                                              `Buy Date: ${analysis.buyDate}`,
-                                                              `Sell Date: ${analysis.sellDate}`,
-                                                              `Profit: ${analysis.profit.toFixed(
-                                                                  2
-                                                              )}`,
-                                                              `Returns: ${analysis.actualReturns.toFixed(
-                                                                  2
-                                                              )} (${analysis.returnsPercentage.toFixed(
-                                                                  2
-                                                              )}%)`,
-                                                          ];
-                                                      },
-                                                      borderColor:
-                                                          "rgb(0, 0, 0)",
-                                                      borderWidth: 2,
                                                   },
                                               },
                                           }
@@ -346,6 +324,26 @@ export default function App() {
                             ],
                         }}
                     />
+                    {analysis.buyDate && analysis.sellDate && (
+                        <div className="mt-5 mb-5 bg-white p-5 rounded shadow-lg">
+                            <h2 className="text-2xl font-bold mb-4">
+                                Analysis:
+                            </h2>
+                            <p className="text-lg mb-2">
+                                Buy Date: {analysis.buyDate}
+                            </p>
+                            <p className="text-lg mb-2">
+                                Sell Date: {analysis.sellDate}
+                            </p>
+                            <p className="text-lg mb-2">
+                                Profit: {analysis.profit.toFixed(2)}
+                            </p>
+                            <p className="text-lg">
+                                Returns: {analysis.actualReturns.toFixed(2)} (
+                                {analysis.returnsPercentage.toFixed(2)}%)
+                            </p>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
