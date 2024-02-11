@@ -103,7 +103,7 @@ export default function App() {
                         return 100;
                     }
                     const diff = Math.random() * 30;
-                    return Math.min(oldProgress + diff, 100);
+                    return Math.min(oldProgress + diff, 90);
                 });
             }, 200);
 
@@ -127,9 +127,9 @@ export default function App() {
                     `https://gold-price-tracker.cyclic.app/?start=${from?.toISOString()}&end=${to?.toISOString()}`,
                     { cancelToken: source.token }
                 );
+                setProgress(100);
                 setGoldPrices(response.data);
                 setIsLoading(false);
-                setProgress(100);
                 if (inputRef.current && inputRef.current.value !== "0") {
                     setAnalysis(
                         maxProfit(response.data, Number(inputRef.current.value))
