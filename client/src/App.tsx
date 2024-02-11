@@ -71,6 +71,7 @@ function maxProfit(data: GoldPrice[], userInvestment: number) {
         profit: maxProfit,
         returnsPercentage,
         actualReturns: returns,
+        finalAmount,
     };
 }
 
@@ -86,6 +87,7 @@ export default function App() {
         profit: 0,
         returnsPercentage: 0,
         actualReturns: 0,
+        finalAmount: 0,
     });
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -115,6 +117,7 @@ export default function App() {
                         profit: 0,
                         returnsPercentage: 0,
                         actualReturns: 0,
+                        finalAmount: 0,
                     });
                     return;
                 }
@@ -330,17 +333,17 @@ export default function App() {
                                 Analysis:
                             </h2>
                             <p className="text-lg mb-2">
-                                Buy Date: {analysis.buyDate}
+                                Buy Date: {format(new Date(analysis.buyDate), "MMM dd, yyyy")}
                             </p>
                             <p className="text-lg mb-2">
-                                Sell Date: {analysis.sellDate}
+                                Sell Date: {format(new Date(analysis.sellDate), "MMM dd, yyyy")}
                             </p>
                             <p className="text-lg mb-2">
-                                Profit: {analysis.profit.toFixed(2)}
+                                Profit per share: {analysis.profit.toFixed(2)} (
+                                {analysis.returnsPercentage.toFixed(2)}%)
                             </p>
                             <p className="text-lg">
-                                Returns: {analysis.actualReturns.toFixed(2)} (
-                                {analysis.returnsPercentage.toFixed(2)}%)
+                                ROI: {Math.round(analysis.finalAmount).toFixed(2)} (+{analysis.actualReturns.toFixed(2)})
                             </p>
                         </div>
                     )}
